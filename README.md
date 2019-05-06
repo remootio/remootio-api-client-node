@@ -15,7 +15,7 @@ First of all make sure that the Remootio Websocket API is enabled for your Remoo
 ##### Step 1
 Import the module by
 ```javascript
-var RemootioDevice = require('remootio-api-client');
+const RemootioDevice = require('remootio-api-client');
 ```
 Create a RemootioDevice object that represents a physical Remootio device by:
 ```javascript
@@ -80,17 +80,17 @@ garagedoor1.addListener('error',(err)=>{
 The incomingmessage event is fired for every incoming frame. Add your own code to process the messages here.
 Updating the lastActionId (a frame coutner needed to be incremented to every action sent to the Remootio device) is handled inside the RemootioDevice class.
 ```javascript
-garagedoor1.addListener('incomingmessage',(frame,decryptedpayload)=>{
+garagedoor1.addListener('incomingmessage',(frame,decryptedPayload)=>{
     //log the incoming messages to the console
     console.log('Incoming message: ',frame)
-    if (decryptedpayload){
-        console.log('Decrypted payload: ',decryptedpayload)
+    if (decryptedPayload){
+        console.log('Decrypted payload: ',decryptedPayload)
     }
     //messages can be handled here:
     //use frame.type to determine the frame type
     //if frame.type == "ENCRYPTED": 
-    //then if decryptedpayload.response!=undefined it's a reponse message to an action sent previously
-    //and if decryptedpayload.event!=undefined it's a log message e.g. gate status changed
+    //then if decryptedPayload.response!=undefined it's a reponse message to an action sent previously
+    //and if decryptedPayload.event!=undefined it's a log message e.g. gate status changed
 })
 ```
 
@@ -142,7 +142,7 @@ This example:
 
 ```javascript
 //Include the RemootioDevice module
-var RemootioDevice = require('remootio-api-client')
+const RemootioDevice = require('remootio-api-client')
 
 //1) - Create a new instance for each Remootio device you have:
 let garagedoor1 = new RemootioDevice(
@@ -171,23 +171,23 @@ garagedoor1.addListener('disconnect',(err)=>{
 })
 
 //The incomingmessage event is fired for every incoming frame
-garagedoor1.addListener('incomingmessage',(frame,decryptedpayload)=>{
+garagedoor1.addListener('incomingmessage',(frame,decryptedPayload)=>{
     //log the incoming messages to the console
-    if (decryptedpayload){
-        if (decryptedpayload.response != undefined){ //It's a response frame to one of our previous actions
-            if (decryptedpayload.response.type == 'TRIGGER'){ //This is the response frame to the .sendTrigger() action
-                console.log('The trigger action was '+(decryptedpayload.response.success == true?"successful":"not successful"))
-                console.log('The status of the garage door when triggering was: '+(decryptedpayload.response.state))
-                if (decryptedpayload.response.state == "no sensor"){
+    if (decryptedPayload){
+        if (decryptedPayload.response != undefined){ //It's a response frame to one of our previous actions
+            if (decryptedPayload.response.type == 'TRIGGER'){ //This is the response frame to the .sendTrigger() action
+                console.log('The trigger action was '+(decryptedPayload.response.success == true?"successful":"not successful"))
+                console.log('The status of the garage door when triggering was: '+(decryptedPayload.response.state))
+                if (decryptedPayload.response.state == "no sensor"){
                     console.log('Since there is no sensor installed for the garage door we will not get any StateChange event, so we just disconnect now.')
                     console.log('Disconnecting...')
                     garagedoor1.disconnect()
                 }
             }
         }
-        if (decryptedpayload.event != undefined){ //It's an event frame containing a log entry from Remootio
-            if (decryptedpayload.event.type == 'StateChange'){ //This event is sent by Remootio when the status of the garage door has changed
-                console.log('The state of the garage door has changed to '+decryptedpayload.event.state);
+        if (decryptedPayload.event != undefined){ //It's an event frame containing a log entry from Remootio
+            if (decryptedPayload.event.type == 'StateChange'){ //This event is sent by Remootio when the status of the garage door has changed
+                console.log('The state of the garage door has changed to '+decryptedPayload.event.state);
                 console.log('Disconnecting...')
                 garagedoor1.disconnect()
             }
@@ -215,7 +215,7 @@ This example:
 
 ```javascript
 //Include the RemootioDevice module
-var RemootioDevice = require('remootio-api-client')
+const RemootioDevice = require('remootio-api-client')
 const fs = require('fs');
 
 const logFileName = './remootiolog.txt'
@@ -242,12 +242,12 @@ garagedoor1.addListener('error',(err)=>{
 })
 
 //The incomingmessage event is fired for every incoming frame
-garagedoor1.addListener('incomingmessage',(frame,decryptedpayload)=>{
+garagedoor1.addListener('incomingmessage',(frame,decryptedPayload)=>{
     //log the incoming messages to the console
-    if (decryptedpayload){
+    if (decryptedPayload){
         //We are interested in events 
-        if (decryptedpayload.event != undefined){ //It's an event frame containing a log entry from Remootio
-            let rowToLog = new Date().toISOString() + ' ' + JSON.stringify(decryptedpayload) + '\r\n'
+        if (decryptedPayload.event != undefined){ //It's an event frame containing a log entry from Remootio
+            let rowToLog = new Date().toISOString() + ' ' + JSON.stringify(decryptedPayload) + '\r\n'
             console.log(rowToLog)
             fs.appendFile(logFileName, rowToLog, function (err) {
                 if (err) console.log('ERROR: ', err);
@@ -259,7 +259,6 @@ garagedoor1.addListener('incomingmessage',(frame,decryptedpayload)=>{
 //Connect to the API
 garagedoor1.connect(true)
 ```
-
 
 
 

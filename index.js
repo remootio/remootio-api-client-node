@@ -1,5 +1,5 @@
 const WebSocket = require('ws');
-var apicrypto = require('./apicrypto')
+const apicrypto = require('./apicrypto')
 const EventEmitter = require('events');
 
 /**
@@ -162,7 +162,7 @@ class RemootioDevice extends EventEmitter{
 
                 //we process the incoming frames
                 if (rcvMsgJson &&rcvMsgJson.type == "ENCRYPTED"){ //if it's an encrypted frame we decrypt it and then this.emit the event
-                    var decryptedPayload = apicrypto.remootioApiDecryptEncrypedFrame(rcvMsgJson,this.apiSecretKey,this.apiAuthKey,this.apiSessionKey)
+                    let decryptedPayload = apicrypto.remootioApiDecryptEncrypedFrame(rcvMsgJson,this.apiSecretKey,this.apiAuthKey,this.apiSessionKey)
                     //we this.emit the encrypted frames with decrypted payload
                     this.emit('incomingmessage',rcvMsgJson,decryptedPayload)
 

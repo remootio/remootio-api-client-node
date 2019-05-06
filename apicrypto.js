@@ -4,7 +4,7 @@
  * crypto-js is used for the code reuse purposes between the browser and the Node.js examples
  */
 
-var CryptoJS = require("crypto-js");
+const CryptoJS = require("crypto-js");
 
 /**
  * This function decrypts the payload of an ENCRYPTED frame.
@@ -25,7 +25,7 @@ function remootioApiDecryptEncrypedFrame(frame,ApiSecretKey,ApiAuthKey,ApiSessio
     }
 
     //STEP 0 - Get the relevant keys used for encryption
-    var CurrentlyUsedSecretKeyWordArray = undefined; //The currently used encryption key (in word array form as CryptoJS prefers) - To be set in the next few lines
+    let CurrentlyUsedSecretKeyWordArray = undefined; //The currently used encryption key (in word array form as CryptoJS prefers) - To be set in the next few lines
     //The used Secret Key - used for encryption - depends on if the session is already authenticated or not
     //If it's not then it's the ApiSecretKey. If it is, the ApiSessionKey is used instead.
     if (ApiSessionKey == undefined){ //If the session is not authenticated, we use ApiSecretKey, which is a hexstring
@@ -39,12 +39,12 @@ function remootioApiDecryptEncrypedFrame(frame,ApiSecretKey,ApiAuthKey,ApiSessio
 
     //The auth key is used for calculating the MAC (Message Authentication Code), which is a HMAC-SHA256
     //CryptoJs works with wordArrays, but ApiAuthKey is a hexstring
-    var ApiAuthKeyWordArray = CryptoJS.enc.Hex.parse(ApiAuthKey) //Parse hexstring
+    let ApiAuthKeyWordArray = CryptoJS.enc.Hex.parse(ApiAuthKey) //Parse hexstring
 
     //Step 1 verify MAC
     //It is a HMAC-SHA256 over the JSON.stringify(frame.data)
-    var mac = CryptoJS.HmacSHA256(JSON.stringify(frame.data),ApiAuthKeyWordArray)
-    var base64mac = CryptoJS.enc.Base64.stringify(mac);
+    let mac = CryptoJS.HmacSHA256(JSON.stringify(frame.data),ApiAuthKeyWordArray)
+    let base64mac = CryptoJS.enc.Base64.stringify(mac);
     //Check if the calculated MAC matches the one sent by the API
     let macMatches=true;
     if (base64mac != frame.mac){ //If the MAC doesn't match - return
@@ -54,17 +54,17 @@ function remootioApiDecryptEncrypedFrame(frame,ApiSecretKey,ApiAuthKey,ApiSessio
 
     //STEP 2 decrypt the payload
     //The frame.data.payload is a base64 encoded string, we convert it to wordArray for CryptoJS
-    var payloadWordArray = CryptoJS.enc.Base64.parse(frame.data.payload)
+    let payloadWordArray = CryptoJS.enc.Base64.parse(frame.data.payload)
     //The frame.data.iv is a base64 encoded string, we convert it to wordArray for CryptoJS
-    var ivWordArray = CryptoJS.enc.Base64.parse(frame.data.iv)
+    let ivWordArray = CryptoJS.enc.Base64.parse(frame.data.iv)
 
-    var decryptedPayloadWordArray = CryptoJS.AES.decrypt({ciphertext: payloadWordArray},CurrentlyUsedSecretKeyWordArray,{
+    let decryptedPayloadWordArray = CryptoJS.AES.decrypt({ciphertext: payloadWordArray},CurrentlyUsedSecretKeyWordArray,{
         iv:ivWordArray,
         mode: CryptoJS.mode.CBC,
         padding: CryptoJS.pad.Pkcs7
     })
-    var decryptedPayload = CryptoJS.enc.Latin1.stringify(decryptedPayloadWordArray) //The decrypted data is Latin1 encoded string representing a stringified JSON object
-    var decryptedPayloadJSON = undefined;
+    let decryptedPayload = CryptoJS.enc.Latin1.stringify(decryptedPayloadWordArray) //The decrypted data is Latin1 encoded string representing a stringified JSON object
+    let decryptedPayloadJSON = undefined;
     try{
         decryptedPayloadJSON = JSON.parse(decryptedPayload)
     }
@@ -96,7 +96,7 @@ function remootioApiConstructEncrypedFrame(unencryptedPayload,ApiSecretKey,ApiAu
     //STEP 0 - Get the relevant keys used for encryption
     //The used Secret Key is never used in this function because the client is only able to send vaid ENCRYPTED
     //frames in an authenticated session (after it received the sessionKey, we only use the sessionKey here)
-    var CurrentlyUsedSecretKeyWordArray = undefined
+    let CurrentlyUsedSecretKeyWordArray = undefined
     if (ApiSessionKey == undefined){ 
         //If the session is not authenticated, the client cannot send valid encrypted frames to the Remootio device
         //so this is an error, and we just return undefined
@@ -109,15 +109,15 @@ function remootioApiConstructEncrypedFrame(unencryptedPayload,ApiSecretKey,ApiAu
 
     //The auth key is used for calculating the MAC (Message Authentication Code), which is a HMAC-SHA256
     //CryptoJs works with wordArrays, but ApiAuthKey is a hexstring
-    var ApiAuthKeyWordArray = CryptoJS.enc.Hex.parse(ApiAuthKey) //Parse hexstring
+    let ApiAuthKeyWordArray = CryptoJS.enc.Hex.parse(ApiAuthKey) //Parse hexstring
 
     //STEP 1 encrypt the payload
     //3.1 generate random IV
-    var ivWordArray = CryptoJS.lib.WordArray.random(16);
+    let ivWordArray = CryptoJS.lib.WordArray.random(16);
     //Convert the unencrypted payload to wordArray for CryptoJS
-    var unencryptedPayloadWordArray = CryptoJS.enc.Latin1.parse(unencryptedPayload)
+    let unencryptedPayloadWordArray = CryptoJS.enc.Latin1.parse(unencryptedPayload)
     //Do the encryption
-    var encryptedData = CryptoJS.AES.encrypt(unencryptedPayloadWordArray,CurrentlyUsedSecretKeyWordArray,{
+    let encryptedData = CryptoJS.AES.encrypt(unencryptedPayloadWordArray,CurrentlyUsedSecretKeyWordArray,{
         iv:ivWordArray,
         mode: CryptoJS.mode.CBC,
         padding: CryptoJS.pad.Pkcs7
@@ -127,14 +127,14 @@ function remootioApiConstructEncrypedFrame(unencryptedPayload,ApiSecretKey,ApiAu
     //Step 2 create the {data:...} object of the encrypted frame used for HMAC calculation
     //The order of the elements in the toHMACObj is very important, (if they are in other order the calculated HMAC will be different)
     //And the Remootio API will reject the message
-    var toHMACObj = {
+    let toHMACObj = {
             iv:CryptoJS.enc.Base64.stringify(ivWordArray), //IV is a base64 encoded string
             payload:CryptoJS.enc.Base64.stringify(encryptedPayloadWordArray), 
     }
     //STEP 3 calcualte the HMAC-SHA256 of JSON.stringify(frame.data)
-    var toHMAC = JSON.stringify(toHMACObj) //The data we calculate the HMAC on
-    var mac = CryptoJS.HmacSHA256(toHMAC,ApiAuthKeyWordArray)
-    var base64mac = CryptoJS.enc.Base64.stringify(mac); //We convert the mac to a base64 array
+    let toHMAC = JSON.stringify(toHMACObj) //The data we calculate the HMAC on
+    let mac = CryptoJS.HmacSHA256(toHMAC,ApiAuthKeyWordArray)
+    let base64mac = CryptoJS.enc.Base64.stringify(mac); //We convert the mac to a base64 array
 
     //STEP 4 we construct and return the full encrypted frame
     return {
