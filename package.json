@@ -1,0 +1,29 @@
+{
+  "name": "remootio-api-client",
+  "version": "1.0.0",
+  "description": "Client for the Remootio Websocket API",
+  "main": "index.js",
+  "homepage": "https://www.remootio.com",
+  "author": {
+    "name": "Remootio",
+    "url": "https://github.com/remootio"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/remootio/remootio-api-client-node.git"
+  },
+  "bugs": {
+    "url": "http://github.com/remootio/remootio-api-client-node/issues"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "Remootio", "remootio device", "api", "smart home", "gate", "garage door"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "crypto-js": "^3.1.9-1",
+    "ws": "^7.0.0"
+  }
+}
