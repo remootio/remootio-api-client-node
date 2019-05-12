@@ -102,6 +102,7 @@ class RemootioDevice extends EventEmitter{
             this.sendPingMessageEveryXMs = 60000;
         }
 
+        this.sendPingMessageIntervalHandle = undefined; //we fire up a setInterval upon connection to the device to send ping messages every x seconds
         this.pingReplyTimeoutXMs = this.sendPingMessageEveryXMs/2; //in ms, if a PONG frame (or any other frame) doesn't arrive pingReplyTimeoutXMs milliseconds after we send a PING frame, we assume the connection is broken 
 
         this.pingReplyTimeoutHandle = undefined //We check for pong response for all our ping messages, if they don't arrive we assume the connection is broken and close it
@@ -131,23 +132,19 @@ class RemootioDevice extends EventEmitter{
 
             //We send a ping message every 60 seconds to keep the connection alive
             //If the Remootio API gets no message for 120 seconds, it closes the connection
-            let SendPeriodicPingMsg = ()=>{
-                setTimeout(()=>{
-                    if (this.websocketClient.readyState == WebSocket.OPEN){
-                        //Create a timeout that is cleared once a PONG message is received - if it doesn't arrive, we assume the connection is broken
-                        this.pingReplyTimeoutHandle = setTimeout(()=>{
-                            this.emit('error','No response for PING message in '+this.pingReplyTimeoutXMs+' ms. Connection is broken.')
-                            if (this.websocketClient){
-                                this.websocketClient.terminate()
-                                this.pingReplyTimeoutHandle=undefined
-                            }
-                        },this.pingReplyTimeoutXMs)
-                        this.sendPing()
-                        SendPeriodicPingMsg()
-                    }
-                },this.sendPingMessageEveryXMs)
-            }
-            SendPeriodicPingMsg()
+            this.sendPingMessageIntervalHandle=setInterval(()=>{
+                if (this.websocketClient.readyState == WebSocket.OPEN){
+                    //Create a timeout that is cleared once a PONG message is received - if it doesn't arrive, we assume the connection is broken
+                    this.pingReplyTimeoutHandle = setTimeout(()=>{
+                        this.emit('error','No response for PING message in '+this.pingReplyTimeoutXMs+' ms. Connection is broken.')
+                        if (this.websocketClient){
+                            this.websocketClient.terminate()
+                            this.pingReplyTimeoutHandle=undefined
+                        }
+                    },this.pingReplyTimeoutXMs)
+                    this.sendPing()
+                }
+            },this.sendPingMessageEveryXMs)
         });
 
         this.websocketClient.on('message', (data)=> {
@@ -205,6 +202,12 @@ class RemootioDevice extends EventEmitter{
         });
         
         this.websocketClient.on('close', ()=>{
+            //Clear the ping message interval if the connection is lost
+            if (this.sendPingMessageIntervalHandle != undefined){
+                clearInterval(this.sendPingMessageIntervalHandle)
+                this.sendPingMessageIntervalHandle = undefined
+            }
+
             if (this.autoReconnect == true){
                 this.connect(this.autoReconnect)
             }
