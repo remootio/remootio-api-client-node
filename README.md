@@ -36,7 +36,7 @@ The Remootio device emits various events. Add listeners to the events you need t
 
 The connecting event is called when the API client starts connecting to the Remootio device
 ```javascript
-garagedoor1.addListener('connecting',()=>{
+garagedoor1.on('connecting',()=>{
     console.log('garage door 1 connecting ...')
 })
 ```
@@ -44,7 +44,7 @@ garagedoor1.addListener('connecting',()=>{
 The conencted event is called when the websocket connection is established with the Remootio device.
 You need to authenticate each session (connection) to be able to control your Remootio device or receive log events. This can be done using the `.authenticate()` method. It is recommended to call this in the connected event handler.
 ```javascript
-garagedoor1.addListener('connected',()=>{
+garagedoor1.on('connected',()=>{
     console.log('garage door 1 connected')
     garagedoor1.authenticate() //Authenticate the session (required)
 })
@@ -52,7 +52,7 @@ garagedoor1.addListener('connected',()=>{
 
 The authenticated event is fired once the authentication was completed successfully. From this point on actions that require authentication can be sent to Remootio.
 ```javascript
-garagedoor1.addListener('authenticated',()=>{
+garagedoor1.on('authenticated',()=>{
     console.log('garage door 1 session authenticated')
     //From this point on actions (that require authentication) can be sent to Remootio
     //garagedoor1.sendQuery()
@@ -65,14 +65,14 @@ garagedoor1.addListener('authenticated',()=>{
 
 The disconnect event is fired if the websocket connection to Remootio is closed
 ```javascript
-garagedoor1.addListener('disconnect',()=>{
+garagedoor1.on('disconnect',()=>{
     console.log('garage door 1 disconnected')
 })
 ```
 
 The error event is fired if there was an error (e.g. the authentication process failed, there was an encryption error, and so on). If there is no response to a keepalive PING the connection is considered to be broken, and this will also fire an error event.
 ```javascript
-garagedoor1.addListener('error',(err)=>{
+garagedoor1.on('error',(err)=>{
     console.log('error',err)
 })
 ```
@@ -80,7 +80,7 @@ garagedoor1.addListener('error',(err)=>{
 The incomingmessage event is fired for every incoming frame. Add your own code to process the messages here.
 Updating the lastActionId (a frame coutner needed to be incremented to every action sent to the Remootio device) is handled inside the RemootioDevice class.
 ```javascript
-garagedoor1.addListener('incomingmessage',(frame,decryptedPayload)=>{
+garagedoor1.on('incomingmessage',(frame,decryptedPayload)=>{
     //log the incoming messages to the console
     console.log('Incoming message: ',frame)
     if (decryptedPayload){
@@ -96,7 +96,7 @@ garagedoor1.addListener('incomingmessage',(frame,decryptedPayload)=>{
 
 The outgoingmessage event is fired for every frame the API client has sent.
 ```javascript
-garagedoor1.addListener('outgoingmessage',(frame, unencryptedPayload)=>{
+garagedoor1.on('outgoingmessage',(frame, unencryptedPayload)=>{
     console.log('Outgoing message: ',frame)
     if (unencryptedPayload){
         console.log('Unencrypted payload: ',unencryptedPayload)
@@ -152,26 +152,26 @@ let garagedoor1 = new RemootioDevice(
     )
 
 //2) - Add listeners to various events:
-garagedoor1.addListener('connected',()=>{
+garagedoor1.on('connected',()=>{
     console.log('garage door 1 connected')
     garagedoor1.authenticate()
 })
 
-garagedoor1.addListener('authenticated',()=>{
+garagedoor1.on('authenticated',()=>{
     console.log('garage door 1 session authenticated')
     garagedoor1.sendTrigger()
 })
 
-garagedoor1.addListener('error',(err)=>{
+garagedoor1.on('error',(err)=>{
     console.log('error',err)
 })
 
-garagedoor1.addListener('disconnect',(err)=>{
+garagedoor1.on('disconnect',(err)=>{
     process.exit(0)
 })
 
 //The incomingmessage event is fired for every incoming frame
-garagedoor1.addListener('incomingmessage',(frame,decryptedPayload)=>{
+garagedoor1.on('incomingmessage',(frame,decryptedPayload)=>{
     //log the incoming messages to the console
     if (decryptedPayload){
         if (decryptedPayload.response != undefined){ //It's a response frame to one of our previous actions
@@ -228,21 +228,21 @@ let garagedoor1 = new RemootioDevice(
     )
 
 //2) - Add listeners to various events:
-garagedoor1.addListener('connected',()=>{
+garagedoor1.on('connected',()=>{
     console.log('garage door 1 connected')
     garagedoor1.authenticate()
 })
 
-garagedoor1.addListener('authenticated',()=>{
+garagedoor1.on('authenticated',()=>{
     console.log('garage door 1 session authenticated')
 })
 
-garagedoor1.addListener('error',(err)=>{
+garagedoor1.on('error',(err)=>{
     console.log('error',err)
 })
 
 //The incomingmessage event is fired for every incoming frame
-garagedoor1.addListener('incomingmessage',(frame,decryptedPayload)=>{
+garagedoor1.on('incomingmessage',(frame,decryptedPayload)=>{
     //log the incoming messages to the console
     if (decryptedPayload){
         //We are interested in events 
