@@ -1,6 +1,6 @@
 # Remootio API Client for Node.js
 
-This module is a Node.js client for Remootio's websocket API. Remootio is a smart gate and garage door controller product. To learn more please visit www.remootio.com. The API documentation can be found [here]( http://www.remootio.com/docs/WebsocketApiDocs.pdf). The API client package handles the connection with your Remootio device, sends keepalive PING frame, encrypts and decrypts ENCRYPTED frames automatically, and can also reconnect automatically if the connection is lost.
+This module is a Node.js client for Remootio's websocket API. Remootio is a smart gate and garage door controller product. To learn more please visit www.remootio.com. The API documentation can be found [here]( https://github.com/remootio/remootio-api-documentation ). The API client package handles the connection with your Remootio device, sends keepalive PING frame, encrypts and decrypts ENCRYPTED frames automatically, and can also reconnect automatically if the connection is lost.
 
 ### Installation
 
