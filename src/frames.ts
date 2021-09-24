@@ -64,15 +64,24 @@ export type ReceivedFrames = ErrorFrame | PongFrame | ServerHelloFrame | Encrypt
 export type SentEcryptedFrameContent = RemootioAction;
 export type ReceivedEncryptedFrameContent = RemootioActionResponse | EventTypes | ChallengeFrame;
 
-type ActionTypes = 'QUERY' | 'TRIGGER' | 'TRIGGER_SECONDARY' | 'OPEN' | 'CLOSE' | 'RESTART';
+type ActionTypesWithDurationParam = 'TRIGGER' | 'TRIGGER_SECONDARY' | 'OPEN' | 'CLOSE';
+type SimpleActionTypes = 'QUERY' | 'RESTART';
+
+type ActionTypes = ActionTypesWithDurationParam | SimpleActionTypes;
 type SensorStates = 'closed' | 'open' | 'no sensor';
 type KeyTypes = 'master key' | 'unique key' | 'guest key' | 'api key' | 'smart home' | 'automation';
 type ConnectionTypes = 'bluetooth' | 'wifi' | 'internet' | 'autoopen' | 'unknown' | 'none';
 export interface RemootioAction {
-  action: {
-    type: ActionTypes;
-    id: number;
-  };
+  action:
+    | {
+        type: SimpleActionTypes;
+        id: number;
+      }
+    | {
+        type: ActionTypesWithDurationParam;
+        id: number;
+        duration?: number;
+      };
 }
 export interface RemootioActionResponse {
   response: {

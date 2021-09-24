@@ -48,6 +48,14 @@ import {
  *
  * @method sendClose() - send a CLOSE action //needs authentication
  *
+ * @method holdTriggerOutputActive(durationMins) Holds the output triggered by the sendTrigger command active for durationMins
+ *
+ * @method holdTriggerSecondaryOutputActive(durationMins) Holds the secondary output triggered by the sendTriggerSecondary command active for durationMins
+ *
+ * @method holdOpenOutputActive(durationMins) Holds the output triggered by the sendOpen command active for durationMins
+ *
+ * @method holdCloseOutputActive(durationMins) Holds the output triggered by the sendClose command active for durationMins
+ *
  * @method sendRestart() - send a RESTART action //needs authentication
  *
  * @method sendFrame(frame) - send a normal frame the sendPing and sendHello and authenticate functions above use this
@@ -441,6 +449,77 @@ class RemootioDevice extends EventEmitter {
       this.sendEncryptedFrame({
         action: {
           type: 'CLOSE',
+          id: (this.lastActionId + 1) % 0x7fffffff //set frame counter to be last frame id + 1
+        }
+      });
+    } else {
+      console.warn('Unexpected error - lastActionId is undefined');
+    }
+  }
+
+  /**
+   * Sends a TRIGGER action with hold active duration in an ENCRYPTED frame to the Remootio device API.
+   * This action triggers the output of the Remootio device and holds it active for the duration specified in minutes
+   */
+  holdTriggerOutputActive(durationMins: number): void {
+    if (this.lastActionId != undefined) {
+      this.sendEncryptedFrame({
+        action: {
+          type: 'TRIGGER',
+          duration: durationMins,
+          id: (this.lastActionId + 1) % 0x7fffffff //set frame counter to be last frame id + 1
+        }
+      });
+    } else {
+      console.warn('Unexpected error - lastActionId is undefined');
+    }
+  }
+  /**
+   * Sends a TRIGGER_SECONDARY action with hold active duration in an ENCRYPTED frame to the Remootio device API.
+   * This action triggers the secondary output of the Remootio device and holds it active for the duration specified in minutes
+   */
+  holdTriggerSecondaryOutputActive(durationMins: number): void {
+    if (this.lastActionId != undefined) {
+      this.sendEncryptedFrame({
+        action: {
+          type: 'TRIGGER_SECONDARY',
+          duration: durationMins,
+          id: (this.lastActionId + 1) % 0x7fffffff //set frame counter to be last frame id + 1
+        }
+      });
+    } else {
+      console.warn('Unexpected error - lastActionId is undefined');
+    }
+  }
+
+  /**
+   * Sends a OPEN action with hold active duration in an ENCRYPTED frame to the Remootio device API.
+   * This action triggers the open direction output of the Remootio device and holds it active for the duration specified in minutes
+   */
+  holdOpenOutputActive(durationMins: number): void {
+    if (this.lastActionId != undefined) {
+      this.sendEncryptedFrame({
+        action: {
+          type: 'OPEN',
+          duration: durationMins,
+          id: (this.lastActionId + 1) % 0x7fffffff //set frame counter to be last frame id + 1
+        }
+      });
+    } else {
+      console.warn('Unexpected error - lastActionId is undefined');
+    }
+  }
+
+  /**
+   * Sends a CLOSE action with hold active duration in an ENCRYPTED frame to the Remootio device API.
+   * This action triggers the close direction output of the Remootio device and holds it active for the duration specified in minutes
+   */
+  holdCloseOutputActive(durationMins: number): void {
+    if (this.lastActionId != undefined) {
+      this.sendEncryptedFrame({
+        action: {
+          type: 'CLOSE',
+          duration: durationMins,
           id: (this.lastActionId + 1) % 0x7fffffff //set frame counter to be last frame id + 1
         }
       });
