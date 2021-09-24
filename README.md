@@ -123,6 +123,10 @@ The RemootioDevice class provides the following methods to send frames
  - `.sendOpen()` - Opens your gate or garage door (triggers the control output of Remootio if the gate status is "closed")
  - `.sendClose()` - Closes your gate or garage door (triggers the control output of Remootio if the gate status is "open")
  - `.sendRestart()` - Restarts your Remootio device.
+ - `.holdTriggerOutputActive(durationMins)` - Holds the control output which would be triggered by sendTrigger active for durationMins minutes
+ - `.holdTriggerSecondaryOutputActive(durationMins)` - Holds the control output which would be triggered by sendTriggerSecondary active for durationMins minutes
+ - `.holdOpenOutputActive(durationMins)` - Holds the control output which would be triggered by sendOpen active for durationMins minutes
+ - `.holdCloseOutputActive(durationMins)` - Holds the control output which would be triggered by sendClose active for durationMins minutes
 
 ##### Checking the status of the device
 
