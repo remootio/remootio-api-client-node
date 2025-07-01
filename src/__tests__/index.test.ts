@@ -2,14 +2,16 @@
 import RemootioDevice = require('../index');
 
 const testIp = '192.168.0.15';
-const testApiSecretKey = 'C85B1CF44398C3BA36B35D63CD779C0A265F9592FF9C5D85EFA16E3C4121B4F6';
-const testApiAuthKey = 'F01AEB37D9E79FB213ACA2CFB48BECF6C1513F1C5623534799B3BEFE8EF681A0';
+const testApiSecretKey =
+  'C85B1CF44398C3BA36B35D63CD779C0A265F9592FF9C5D85EFA16E3C4121B4F6';
+const testApiAuthKey =
+  'F01AEB37D9E79FB213ACA2CFB48BECF6C1513F1C5623534799B3BEFE8EF681A0';
 
 const delay = (ms: number) =>
-  new Promise((resolve) =>
+  new Promise<void>((resolve) =>
     setTimeout(() => {
       resolve();
-    }, ms)
+    }, ms),
   );
 
 test('Can be imported with simple require as shown in docs', () => {
@@ -18,43 +20,58 @@ test('Can be imported with simple require as shown in docs', () => {
 
   expect(RequiredRemootioDevice).not.toBeUndefined();
 
-  const instance = new RequiredRemootioDevice(testIp, testApiSecretKey, testApiAuthKey);
+  const instance = new RequiredRemootioDevice(
+      testIp,
+      testApiSecretKey,
+      testApiAuthKey,
+  );
 
   expect(instance).toBeInstanceOf(RemootioDevice);
 });
 
-test('Client has correct default fields', () => {
-  const instance = new RemootioDevice(testIp, testApiSecretKey, testApiAuthKey);
+describe('Test RemootioDevice', () => {
+  let instance: RemootioDevice;
 
-  expect(instance).toBeInstanceOf(RemootioDevice);
+  beforeAll(async () => {
+    instance = new RemootioDevice(testIp, testApiSecretKey, testApiAuthKey);
+  });
+  afterAll(() => {
+    instance.disconnect();
+  });
 
-  //Default client should not be connected nor authenticated
-  expect(instance.isConnected).toBe(false);
-  expect(instance.isAuthenticated).toBe(false);
+  test('Client has correct default fields', () => {
+    expect(instance).toBeInstanceOf(RemootioDevice);
 
-  //Last sent action id should be undefined
-  expect(instance.theLastActionId).toBeUndefined();
-});
+    // Default client should not be connected nor authenticated
+    expect(instance.isConnected).toBe(false);
+    expect(instance.isAuthenticated).toBe(false);
 
-test('Client can emit events', async () => {
-  const instance = new RemootioDevice(testIp, testApiSecretKey, testApiAuthKey);
+    // Last sent action id should be undefined
+    expect(instance.theLastActionId).toBeUndefined();
+  });
 
-  expect(instance).toBeInstanceOf(RemootioDevice);
+  test('Client can emit events', async () => {
+    expect(instance).toBeInstanceOf(RemootioDevice);
 
-  const connectingCallback = jest.fn(() => {});
-  instance.on('connecting', connectingCallback);
+    const connectingCallback = jest.fn(() => {});
+    instance.on('connecting', connectingCallback);
 
-  const connectedCallback = jest.fn(() => {});
-  instance.on('connected', connectedCallback);
+    const connectedCallback = jest.fn(() => {});
+    instance.on('connected', connectedCallback);
 
-  const disconnectCallback = jest.fn(() => {});
-  instance.on('disconnect', disconnectCallback);
+    const disconnectCallback = jest.fn(() => {});
+    instance.on('disconnect', disconnectCallback);
 
-  instance.connect(false);
+    instance.connect(false);
 
-  await delay(500);
+    await delay(500);
 
-  expect(connectingCallback).toHaveBeenCalled();
-  expect(connectedCallback).not.toHaveBeenCalled();
-  expect(disconnectCallback).not.toHaveBeenCalled();
+    expect(connectingCallback).toHaveBeenCalled();
+    expect(connectedCallback).not.toHaveBeenCalled();
+    expect(disconnectCallback).not.toHaveBeenCalled();
+
+    instance.disconnect();
+    await delay(500);
+    expect(disconnectCallback).toHaveBeenCalled();
+  });
 });

@@ -59,18 +59,41 @@ export interface ChallengeFrame {
   };
 }
 
-export type ReceivedFrames = ErrorFrame | PongFrame | ServerHelloFrame | EncryptedFrame;
+export type ReceivedFrames =
+  | ErrorFrame
+  | PongFrame
+  | ServerHelloFrame
+  | EncryptedFrame;
 
 export type SentEcryptedFrameContent = RemootioAction;
-export type ReceivedEncryptedFrameContent = RemootioActionResponse | EventTypes | ChallengeFrame;
+export type ReceivedEncryptedFrameContent =
+  | RemootioActionResponse
+  | EventTypes
+  | ChallengeFrame;
 
-type ActionTypesWithDurationParam = 'TRIGGER' | 'TRIGGER_SECONDARY' | 'OPEN' | 'CLOSE';
+type ActionTypesWithDurationParam =
+  | 'TRIGGER'
+  | 'TRIGGER_SECONDARY'
+  | 'OPEN'
+  | 'CLOSE';
 type SimpleActionTypes = 'QUERY' | 'RESTART';
 
 type ActionTypes = ActionTypesWithDurationParam | SimpleActionTypes;
 type SensorStates = 'closed' | 'open' | 'no sensor';
-type KeyTypes = 'master key' | 'unique key' | 'guest key' | 'api key' | 'smart home' | 'automation';
-type ConnectionTypes = 'bluetooth' | 'wifi' | 'internet' | 'autoopen' | 'unknown' | 'none';
+type KeyTypes =
+  | 'master key'
+  | 'unique key'
+  | 'guest key'
+  | 'api key'
+  | 'smart home'
+  | 'automation';
+type ConnectionTypes =
+  | 'bluetooth'
+  | 'wifi'
+  | 'internet'
+  | 'autoopen'
+  | 'unknown'
+  | 'none';
 export interface RemootioAction {
   action:
     | {
