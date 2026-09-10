@@ -260,7 +260,7 @@ class RemootioDevice extends EventEmitter {
           this.emit('incomingmessage', rcvMsgJson, undefined);
         }
       } catch (e) {
-        this.emit('error', e);
+        this.emit('error', e instanceof Error ? e.message : String(e));
       }
     });
 
